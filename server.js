@@ -11,12 +11,39 @@ const runner            = require('./test-runner');
 
 const app = express();
 
+const mongoose = require('mongoose');
+const mongodb = require('mongodb');
+const { MongoClient }           = require('mongodb');
+const ObjectID          = require('mongodb').ObjectID;
+
+
 app.use('/public', express.static(process.cwd() + '/public'));
 
 app.use(cors({origin: '*'})); //USED FOR FCC TESTING PURPOSES ONLY!
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+//connection function
+mongoose.connect(process.env.DB, {
+  useNewUrlParser: true, //options
+  useUnifiedTopology: true,
+  useFindAndModify: false
+});
+
+//error handling for mongoose??
+//building Schema
+const Schema = mongoose.Schema; 
+const librarySchema = new Schema({ //new Schema called issueSchema
+  title: {type:String, required:true},
+  commentcount: {type: Number, default: 0},
+  comments: {type:Array},
+})
+
+//there is only one model, "book"
+//building a new model from library schema
+const Book = mongoose.model('Book', librarySchema);
+
 
 //Index page (static HTML)
 app.route('/')
